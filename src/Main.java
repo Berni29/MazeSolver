@@ -1,5 +1,6 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -55,6 +56,8 @@ public class Main {
             @Override
             public void actionPerformed(ActionEvent e) {
                     JFileChooser fc = new JFileChooser();
+                    FileNameExtensionFilter filter = new FileNameExtensionFilter("Maze txt files", "txt");
+                    fc.setFileFilter(filter);
                     int result = fc.showOpenDialog(form);
                     if(result == JFileChooser.APPROVE_OPTION) {
                         mff.createMaze(fc.getSelectedFile());
