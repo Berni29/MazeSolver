@@ -33,9 +33,17 @@ public class Main {
                         @Override
                         public void run() {
                             if(wf!=null) {
+                                ImageIcon icon = new ImageIcon(img);
                                 while (!wf.destinationReached()) {
-                                    wf.move(walker);
-                                    mazeArea.setIcon(new ImageIcon(img.getScaledInstance(img.getWidth(), img.getHeight(), Image.SCALE_DEFAULT)));
+                                    try {
+                                        wf.move(walker);
+                                        mazeArea.setIcon(icon);
+                                        TimeUnit.MILLISECONDS.sleep(1);
+                                        mazeArea.repaint();
+                                    }
+                                    catch (InterruptedException e) {
+                                        System.err.println(e.getMessage());
+                                    }
                                 }
                             }
                         }
@@ -47,14 +55,15 @@ public class Main {
             @Override
             public void actionPerformed(ActionEvent e) {
                     JFileChooser fc = new JFileChooser();
-                    fc.showOpenDialog(form);
-                    mff.createMaze(fc.getSelectedFile());
-                    img = mff.getImageMaze();
-                    walker = (Graphics2D) img.getGraphics();
-                    wf = null;
-                    wf = new WallFollower(mff.getMaze());
-                    mazeArea.setIcon(new ImageIcon(img.getScaledInstance(img.getWidth(),img.getHeight(), Image.SCALE_DEFAULT)));
-
+                    int result = fc.showOpenDialog(form);
+                    if(result == JFileChooser.APPROVE_OPTION) {
+                        mff.createMaze(fc.getSelectedFile());
+                        img = mff.getImageMaze();
+                        walker = (Graphics2D) img.getGraphics();
+                        wf = null;
+                        wf = new WallFollower(mff.getMaze());
+                        mazeArea.setIcon(new ImageIcon(img.getScaledInstance(img.getWidth(), img.getHeight(), Image.SCALE_DEFAULT)));
+                    }
             }
 
         });
