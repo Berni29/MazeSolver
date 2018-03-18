@@ -1,16 +1,24 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class Main {
 
     private JPanel form;
-    private JTextArea mazeField;
     private JButton GOButton;
     private JButton LOADMAZEButton;
+    private JLabel mazeArea;
     private MazeFromFile mff = new MazeFromFile();
     private WallFollower wf = null;
+    private BufferedImage img;
+    private Graphics2D walker;
 
     public Main() {
         GOButton.addActionListener(new ActionListener() {
@@ -20,22 +28,35 @@ public class Main {
                     JOptionPane.showMessageDialog(form,"Maze not loaded");
                 }
                 else {
-                    wf.walkThroughMaze();
-                    mazeField.setText(mff.getStringMaze());
+                    Executor executor = Executors.newSingleThreadExecutor();
+                    executor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(wf!=null) {
+                                while (!wf.destinationReached()) {
+                                    wf.move(walker);
+                                    mazeArea.setIcon(new ImageIcon(img.getScaledInstance(img.getWidth(), img.getHeight(), Image.SCALE_DEFAULT)));
+                                }
+                            }
+                        }
+                    });
                 }
             }
         });
         LOADMAZEButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFileChooser fc = new JFileChooser();
-                fc.showOpenDialog(form);
-                String path = fc.getSelectedFile().getPath();
-                int[] size = mff.checkMazeSize(path);
-                mff.createMaze(size[0],size[1],path);
-                wf = new WallFollower(mff.getMaze());
-                mazeField.setText(mff.getStringMaze());
+                    JFileChooser fc = new JFileChooser();
+                    fc.showOpenDialog(form);
+                    mff.createMaze(fc.getSelectedFile());
+                    img = mff.getImageMaze();
+                    walker = (Graphics2D) img.getGraphics();
+                    wf = null;
+                    wf = new WallFollower(mff.getMaze());
+                    mazeArea.setIcon(new ImageIcon(img.getScaledInstance(img.getWidth(),img.getHeight(), Image.SCALE_DEFAULT)));
+
             }
+
         });
     }
 

@@ -1,11 +1,14 @@
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 
 public class MazeFromFile {
     private Cell [][] maze;
+    private int x = 0 , y = 0;
+    private final int CELLSIZE = 8;
 
-    public int[] checkMazeSize(String path){
+    public void checkMazeSize(File path){
         String[] sizeString = new String[2];
-        int[] size = {0,0};
         String buffer;
         try {
             BufferedReader reader = new BufferedReader(new FileReader(path));
@@ -17,17 +20,17 @@ public class MazeFromFile {
                 }
             } while (buffer!=null);
             reader.close();
-            size[0] = Integer.parseInt(sizeString[0]);
-            size[1] = Integer.parseInt(sizeString[1]);
+            x = Integer.parseInt(sizeString[0]);
+            y = Integer.parseInt(sizeString[1]);
         }
         catch(IOException e){
             System.err.println(e.getMessage());
         }
-        return size;
     }
 
-    public void createMaze(int x, int y, String path) {
+    public void createMaze(File path) {
         String buffer;
+        checkMazeSize(path);
         String[] info = {"","",""};
         maze = new Cell[x+1][y+1];
         for(int i = 0; i <= x; i++) {
@@ -105,52 +108,37 @@ public class MazeFromFile {
             System.out.println(e.getMessage());
         }
     }
-    public String getStringMaze() {
-        StringBuilder sb = new StringBuilder();
-        for(int j = 0; j<maze[0].length; j++) {
-            for(int i = 0; i<maze.length; i++){
-                if(maze[i][j].isTop())
-                    sb.append("+---");
-                else
-                    sb.append("+   ");
-            }
-            sb.append("+\n");
-            for(int i = 0; i<maze.length; i++){
-                if(maze[i][j].isLeft())
-                    if(maze[i][j].isVisited())
-                        sb.append("| O ");
-                    else
-                        sb.append("|   ");
-                else
-                    if(maze[i][j].isVisited())
-                        sb.append("  O ");
-                    else
-                        sb.append("    ");
-            }
-            sb.append("|\n");
-            if(j==maze[0].length-1) {
-                for (int i = 0; i < maze.length; i++) {
-                    if (maze[i][j].isBottom())
-                        sb.append("+---");
-                    else
-                        sb.append("+   ");
-                }
-                sb.append("+\n");
-            }
-        }
-        return sb.toString();
-    }
     public void clearMazeTrace() {
         int x = maze.length;
         int y = maze[0].length;
         for(int i = 0; i < x; i++) {
             for(int j = 0; j < y; j++) {
                 maze[j][i].setVisited(false);
+                maze[j][i].setRevisited(false);
             }
         }
     }
     public Cell[][] getMaze() {
         return maze;
     }
+    public BufferedImage getImageMaze() {
+        BufferedImage mazeImg = new BufferedImage((x+1)*CELLSIZE+1,(y+1)*CELLSIZE+1,BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = (Graphics2D)mazeImg.getGraphics();
+        g.setColor(Color.BLACK);
+        for(int j = 0; j<=y; j++){
+            for(int i = 0; i<=x; i++){
+                if(maze[i][j].isTop())
+                    g.drawLine(i*CELLSIZE,j*CELLSIZE,i*CELLSIZE+CELLSIZE,j*CELLSIZE);
+                if(maze[i][j].isLeft())
+                    g.drawLine(i*CELLSIZE,j*CELLSIZE,i*CELLSIZE,j*CELLSIZE+CELLSIZE);
+                if(maze[i][j].isBottom())
+                    g.drawLine(i*CELLSIZE,j*CELLSIZE+CELLSIZE,i*CELLSIZE+CELLSIZE,j*CELLSIZE+CELLSIZE);
+                if(maze[i][j].isRight())
+                    g.drawLine(i*CELLSIZE+CELLSIZE,j*CELLSIZE,i*CELLSIZE+CELLSIZE,j*CELLSIZE+CELLSIZE);
+            }
+        }
+        return mazeImg;
+    }
+
 
 }
