@@ -8,20 +8,20 @@ public class MazeFromFile {
     private final int CELLSIZE = 8;
 
     public void checkMazeSize(File path){
-        String[] sizeString = new String[2];
+        String stringX = "0", stringY = "0";
         String buffer;
         try {
             BufferedReader reader = new BufferedReader(new FileReader(path));
             do {
                 buffer = reader.readLine();
                 if(buffer!=null) {
-                    sizeString[0] = buffer.split(" ")[0];
-                    sizeString[1] = buffer.split(" ")[1];
+                    stringX = buffer.split(" ")[0];
+                    stringY = buffer.split(" ")[1];
                 }
             } while (buffer!=null);
             reader.close();
-            x = Integer.parseInt(sizeString[0]);
-            y = Integer.parseInt(sizeString[1]);
+            x = Integer.parseInt(stringX);
+            y = Integer.parseInt(stringY);
         }
         catch(IOException e){
             System.err.println(e.getMessage());
