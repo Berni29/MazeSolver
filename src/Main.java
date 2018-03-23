@@ -115,7 +115,7 @@ public class Main {
                 try {
                     wf.moveLeft(walker);
                     mazeArea.setIcon(icon);
-                    TimeUnit.MILLISECONDS.sleep(101-speed.getValue());
+                        TimeUnit.MILLISECONDS.sleep(101-speed.getValue());
                     mazeArea.repaint();
                 } catch (InterruptedException e) {
                     System.err.println(e.getMessage());
@@ -132,6 +132,12 @@ public class Main {
             wf = null;
             wf = new WallFollower(mff.getMaze());
             mazeArea.setIcon(new ImageIcon(img.getScaledInstance(img.getWidth(), img.getHeight(), Image.SCALE_DEFAULT)));
+        }
+        try {
+            TimeUnit.MILLISECONDS.sleep(101);
+        }
+        catch (InterruptedException e){
+            e.printStackTrace();
         }
         kill = false;
     }
