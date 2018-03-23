@@ -88,7 +88,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Main");
+        JFrame frame = new JFrame("Maze Solver");
         frame.setContentPane(new Main().form);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
