@@ -33,6 +33,9 @@ public class Main {
                     fc.setFileFilter(filter);
                     int result = fc.showOpenDialog(form);
                     if(result == JFileChooser.APPROVE_OPTION) {
+                        if(solver!=null){
+                            solver.reset();
+                        }
                         file = fc.getSelectedFile();
                         mff = new MazeFromFile();
                         mff.createMaze(file);

@@ -4,7 +4,6 @@ public class Cell {
     private boolean bottom = false;
     private boolean left = false;
     private boolean visited = false;
-    private boolean revisited = false;
     private static int cellSize = 4;
 
     public static int getCellSize() {
@@ -13,14 +12,6 @@ public class Cell {
 
     public static void setCellSize(int cellSize) {
         Cell.cellSize = cellSize;
-    }
-
-    public boolean isRevisited() {
-        return revisited;
-    }
-
-    public void setRevisited(boolean revisited) {
-        this.revisited = revisited;
     }
 
     public boolean isTop() {

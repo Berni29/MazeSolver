@@ -13,6 +13,7 @@ public class WallFollowerRight extends Solver {
     private int posX = 0, posY = 0;
     private int desX, desY;
     private boolean kill = false;
+    private String facing = "top";
 
     public WallFollowerRight(MazeFromFile mff, JLabel mazeArea, JSlider speed) {
         this.mff = mff;
@@ -26,69 +27,179 @@ public class WallFollowerRight extends Solver {
         this.maze[0][0].setVisited(true);
     }
 
-    public void move(Graphics2D g) {
-        int CELLSIZE = Cell.getCellSize();
-        g.setStroke(new BasicStroke(CELLSIZE/2));
-        g.setColor(Color.GREEN);
-        if(!maze[posX][posY].isRight() && !maze[posX+1][posY].isVisited()) {
-            g.drawLine((posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2),(posX*CELLSIZE)+(3*CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2));
-            posX++;
-        }
-        else if (!maze[posX][posY].isTop() && !maze[posX][posY-1].isVisited()) {
-            g.drawLine((posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)-(CELLSIZE/2),(posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2));
-            posY--;
-        }
-        else if(!maze[posX][posY].isLeft() && !maze[posX-1][posY].isVisited()) {
-            g.drawLine((posX*CELLSIZE)-(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2),(posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2));
-            posX--;
-        }
-        else if(!maze[posX][posY].isBottom() && !maze[posX][posY+1].isVisited()) {
-            g.drawLine((posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2),(posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(3*CELLSIZE/2));
-            posY++;
-        }
-        else {
-            maze[posX][posY].setRevisited(true);
-            g.setColor(Color.BLUE);
-            if (!maze[posX][posY].isRight() && !maze[posX+1][posY].isRevisited()) {
-                g.drawLine((posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2),(posX*CELLSIZE)+(3*CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2));
-                posX++;
-            }
-            else if (!maze[posX][posY].isTop() && !maze[posX][posY-1].isRevisited()) {
-                g.drawLine((posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)-(CELLSIZE/2),(posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2));
-                posY--;
-            }
-            else if(!maze[posX][posY].isLeft() && !maze[posX-1][posY].isRevisited()) {
-                g.drawLine((posX*CELLSIZE)-(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2),(posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2));
-                posX--;
-            }
-            else if (!maze[posX][posY].isBottom() && !maze[posX][posY+1].isRevisited()) {
-                g.drawLine((posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2),(posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(3*CELLSIZE/2));
-                posY++;
-            }
-        }
-        maze[posX][posY].setVisited(true);
-    }
-
-    @Override
-    public void walkThrough(){
-        Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while(!kill &&!destinationReached()){
-                        try {
-                            move(walker);
-                            mazeArea.setIcon(new ImageIcon(img));
-                            TimeUnit.MILLISECONDS.sleep(Solver.getBaseSpeed()*(100-speed.getValue()));
-                            mazeArea.repaint();
-                        }
-                        catch (InterruptedException e) {
-                            System.err.println(e.getMessage());
-                        }
+    public String direction() {
+        switch(facing) {
+            case "top":
+                if(maze[posX][posY].isRight()) {
+                    if (!maze[posX][posY].isTop()) {
+                        return "top";
                     }
                 }
-            });
-            thread.start();
+                else {
+                    return "right";
+                }
+                facing = "left";
+                break;
+            case "left":
+                if(maze[posX][posY].isTop()) {
+                    if (!maze[posX][posY].isLeft()) {
+                        return "top";
+                    }
+                }
+                else {
+                    return "right";
+                }
+                facing = "bottom";
+                break;
+            case "bottom":
+                if(maze[posX][posY].isLeft()) {
+                    if (!maze[posX][posY].isBottom()) {
+                        return "top";
+                    }
+                }
+                else {
+                    return "right";
+                }
+                facing = "right";
+                break;
+            case "right":
+                if(maze[posX][posY].isBottom()) {
+                    if (!maze[posX][posY].isRight()) {
+                        return "top";
+                    }
+                }
+                else {
+                    return "right";
+                }
+                facing = "top";
+                break;
+        }
+        return "none";
     }
+
+    public void go(String direction){
+        switch(facing) {
+            case "top":
+                switch(direction) {
+                    case "top":
+                        drawTop(walker);
+                        posY--;
+                        facing = "top";
+                        break;
+                    case "right":
+                        drawRight(walker);
+                        posX++;
+                        facing = "right";
+                        break;
+                }
+                break;
+            case "left":
+                switch(direction) {
+                    case "top":
+                        drawLeft(walker);
+                        posX--;
+                        facing = "left";
+                        break;
+                    case "right":
+                        drawTop(walker);
+                        posY--;
+                        facing = "top";
+                        break;
+                }
+                break;
+            case "bottom":
+                switch(direction) {
+                    case "top":
+                        drawBottom(walker);
+                        posY++;
+                        facing = "bottom";
+                        break;
+                    case "right":
+                        drawLeft(walker);
+                        posX--;
+                        facing = "left";
+                        break;
+                }
+                break;
+            case "right":
+                switch(direction) {
+                    case "top":
+                        drawRight(walker);
+                        posX++;
+                        facing = "right";
+                        break;
+                    case "right":
+                        drawBottom(walker);
+                        posY++;
+                        facing = "bottom";
+                        break;
+                }
+                break;
+        }
+    }
+
+    private void drawTop(Graphics2D walker){
+        int CELLSIZE = Cell.getCellSize();
+        walker.setStroke(new BasicStroke(CELLSIZE/2));
+        if(maze[posX][posY-1].isVisited()) {
+            walker.setColor(Color.RED);
+        }
+        else {
+            walker.setColor(Color.GREEN);
+        }
+        walker.drawLine((posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)-(CELLSIZE/2),(posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2));
+    }
+
+    private void drawRight(Graphics2D walker){
+        int CELLSIZE = Cell.getCellSize();
+        walker.setStroke(new BasicStroke(CELLSIZE/2));
+        if(maze[posX+1][posY].isVisited()) {
+            walker.setColor(Color.RED);
+        }
+        else {
+            walker.setColor(Color.GREEN);
+        }
+        walker.drawLine((posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2),(posX*CELLSIZE)+(3*CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2));
+    }
+
+    private void drawBottom(Graphics2D walker){
+        int CELLSIZE = Cell.getCellSize();
+        walker.setStroke(new BasicStroke(CELLSIZE/2));
+        if(maze[posX][posY+1].isVisited()) {
+            walker.setColor(Color.RED);
+        }
+        else {
+            walker.setColor(Color.GREEN);
+        }
+        walker.drawLine((posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2),(posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(3*CELLSIZE/2));
+    }
+
+    private void drawLeft(Graphics2D walker){
+        int CELLSIZE = Cell.getCellSize();
+        walker.setStroke(new BasicStroke(CELLSIZE/2));
+        if(maze[posX-1][posY].isVisited()) {
+            walker.setColor(Color.RED);
+        }
+        else {
+            walker.setColor(Color.GREEN);
+        }
+        walker.drawLine((posX*CELLSIZE)-(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2),(posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2));
+    }
+
+    public boolean destinationReached() {
+        return posX==desX && posY==desY;
+    }
+
+    public void move() {
+        String direction;
+        maze[posX][posY].setVisited(true);
+        do{
+            direction = direction();
+        }
+        while(direction.equals("none"));
+        go(direction);
+    }
+
     @Override
     public void reset(){
         try {
@@ -105,8 +216,25 @@ public class WallFollowerRight extends Solver {
         mazeArea.repaint();
     }
 
-    public boolean destinationReached() {
-        return posX==desX && posY==desY;
+    @Override
+    public void walkThrough(){
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(!kill &&!destinationReached()){
+                    try {
+                        move();
+                        mazeArea.setIcon(new ImageIcon(img));
+                        TimeUnit.MILLISECONDS.sleep(Solver.getBaseSpeed()*(100-speed.getValue()));
+                        mazeArea.repaint();
+                    }
+                    catch (InterruptedException e) {
+                        System.err.println(e.getMessage());
+                    }
+                }
+            }
+        });
+        thread.start();
     }
 
 }
