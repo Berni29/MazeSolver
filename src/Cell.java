@@ -5,6 +5,15 @@ public class Cell {
     private boolean left = false;
     private boolean visited = false;
     private boolean revisited = false;
+    private static int cellSize = 4;
+
+    public static int getCellSize() {
+        return cellSize;
+    }
+
+    public static void setCellSize(int cellSize) {
+        Cell.cellSize = cellSize;
+    }
 
     public boolean isRevisited() {
         return revisited;

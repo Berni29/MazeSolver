@@ -10,38 +10,21 @@ import java.util.concurrent.TimeUnit;
 public class Main {
 
     private JPanel form;
-    private JButton wallFollowerRightButton;
     private JButton loadMazeButton;
     private JLabel mazeArea;
-    private JButton wallFollowerLeftButton;
     private JButton resetButton;
     private JSlider speed;
-    private MazeFromFile mff = new MazeFromFile();
-    private WallFollower wf = null;
+    private JComboBox sizeBox;
+    private JButton startButton;
+    private JComboBox methodBox;
+
+    private MazeFromFile mff;
     private BufferedImage img;
-    private Graphics2D walker;
     private File file;
-    private boolean kill = false;
+    private Solver solver;
 
     public Main() {
-        wallFollowerRightButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(wf==null){
-                    JOptionPane.showMessageDialog(form,"Maze not loaded");
-                }
-                else {
-                    reset();
-                    Thread thread = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            walk("Right");
-                        }
-                    });
-                    thread.start();
-                }
-            }
-        });
+
         loadMazeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -51,38 +34,56 @@ public class Main {
                     int result = fc.showOpenDialog(form);
                     if(result == JFileChooser.APPROVE_OPTION) {
                         file = fc.getSelectedFile();
+                        mff = new MazeFromFile();
                         mff.createMaze(file);
                         img = mff.getImageMaze();
-                        walker = (Graphics2D) img.getGraphics();
-                        wf = null;
-                        wf = new WallFollower(mff.getMaze());
-                        mazeArea.setIcon(new ImageIcon(img.getScaledInstance(img.getWidth(), img.getHeight(), Image.SCALE_DEFAULT)));
+                        mazeArea.setIcon(new ImageIcon(img));
                     }
             }
+        });
 
-        });
-        wallFollowerLeftButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(wf==null){
-                    JOptionPane.showMessageDialog(form,"Maze not loaded");
-                }
-                else {
-                    reset();
-                    Thread thread = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            walk("Left");
-                        }
-                    });
-                    thread.start();
-                }
-            }
-        });
         resetButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                reset();
+                if(solver!=null)
+                    solver.reset();
+            }
+        });
+
+        sizeBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Cell.setCellSize(Integer.parseInt(sizeBox.getSelectedItem().toString()));
+                if(file!=null) {
+                    if(solver!=null)
+                        solver.reset();
+                    img = mff.getImageMaze();
+                    mazeArea.setIcon(new ImageIcon(img));
+                    mazeArea.repaint();
+                }
+            }
+        });
+        startButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(file==null){
+                    JOptionPane.showMessageDialog(form,"Maze not loaded");
+                }
+                else {
+                    if(solver!=null)
+                        solver.reset();
+                    switch (methodBox.getSelectedIndex()){
+                        case 0:
+                            solver = new WallFollowerRight(mff,mazeArea,speed);
+                            break;
+                        case 1:
+                            solver = new WallFollowerLeft(mff,mazeArea,speed);
+                            break;
+                        default :
+                            solver = null;
+                    }
+                    solver.walkThrough();
+                }
             }
         });
     }
@@ -93,53 +94,6 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
-    }
-
-    public void walk(String direction){
-        if(direction.equals("Right")) {
-            ImageIcon icon = new ImageIcon(img);
-            while (!kill && !wf.destinationReached()) {
-                try {
-                    wf.moveRight(walker);
-                    mazeArea.setIcon(icon);
-                    TimeUnit.MILLISECONDS.sleep(101-speed.getValue());
-                    mazeArea.repaint();
-                } catch (InterruptedException e) {
-                    System.err.println(e.getMessage());
-                }
-            }
-        }
-        else {
-            ImageIcon icon = new ImageIcon(img);
-            while (!kill && !wf.destinationReached()) {
-                try {
-                    wf.moveLeft(walker);
-                    mazeArea.setIcon(icon);
-                        TimeUnit.MILLISECONDS.sleep(101-speed.getValue());
-                    mazeArea.repaint();
-                } catch (InterruptedException e) {
-                    System.err.println(e.getMessage());
-                }
-            }
-        }
-    }
-    public void reset(){
-        kill = true;
-        if(file!=null){
-            mff.clearMazeTrace();
-            img = mff.getImageMaze();
-            walker = (Graphics2D) img.getGraphics();
-            wf = null;
-            wf = new WallFollower(mff.getMaze());
-            mazeArea.setIcon(new ImageIcon(img.getScaledInstance(img.getWidth(), img.getHeight(), Image.SCALE_DEFAULT)));
-        }
-        try {
-            TimeUnit.MILLISECONDS.sleep(101);
-        }
-        catch (InterruptedException e){
-            e.printStackTrace();
-        }
-        kill = false;
     }
 
 }

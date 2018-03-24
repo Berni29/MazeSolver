@@ -5,7 +5,6 @@ import java.io.*;
 public class MazeFromFile {
     private Cell [][] maze;
     private int x = 0 , y = 0;
-    private final int CELLSIZE = 8;
 
     public void checkMazeSize(File path){
         String stringX = "0", stringY = "0";
@@ -35,7 +34,7 @@ public class MazeFromFile {
         maze = new Cell[x+1][y+1];
         for(int i = 0; i <= x; i++) {
             for(int j = 0; j <= y; j++) {
-                maze[j][i] = new Cell();
+                maze[i][j] = new Cell();
             }
         }
         try {
@@ -113,8 +112,8 @@ public class MazeFromFile {
         int y = maze[0].length;
         for(int i = 0; i < x; i++) {
             for(int j = 0; j < y; j++) {
-                maze[j][i].setVisited(false);
-                maze[j][i].setRevisited(false);
+                maze[i][j].setVisited(false);
+                maze[i][j].setRevisited(false);
             }
         }
     }
@@ -122,6 +121,7 @@ public class MazeFromFile {
         return maze;
     }
     public BufferedImage getImageMaze() {
+        int CELLSIZE = Cell.getCellSize();
         BufferedImage mazeImg = new BufferedImage((x+1)*CELLSIZE+1,(y+1)*CELLSIZE+1,BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = (Graphics2D)mazeImg.getGraphics();
         g.setColor(Color.BLACK);
