@@ -34,17 +34,17 @@ public class WallFollowerRight extends Solver {
             g.drawLine((posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2),(posX*CELLSIZE)+(3*CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2));
             posX++;
         }
-        else if(!maze[posX][posY].isBottom() && !maze[posX][posY+1].isVisited()) {
-            g.drawLine((posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2),(posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(3*CELLSIZE/2));
-            posY++;
+        else if (!maze[posX][posY].isTop() && !maze[posX][posY-1].isVisited()) {
+            g.drawLine((posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)-(CELLSIZE/2),(posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2));
+            posY--;
         }
         else if(!maze[posX][posY].isLeft() && !maze[posX-1][posY].isVisited()) {
             g.drawLine((posX*CELLSIZE)-(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2),(posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2));
             posX--;
         }
-        else if (!maze[posX][posY].isTop() && !maze[posX][posY-1].isVisited()) {
-            g.drawLine((posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)-(CELLSIZE/2),(posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2));
-            posY--;
+        else if(!maze[posX][posY].isBottom() && !maze[posX][posY+1].isVisited()) {
+            g.drawLine((posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2),(posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(3*CELLSIZE/2));
+            posY++;
         }
         else {
             maze[posX][posY].setRevisited(true);
@@ -53,17 +53,17 @@ public class WallFollowerRight extends Solver {
                 g.drawLine((posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2),(posX*CELLSIZE)+(3*CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2));
                 posX++;
             }
-            else if (!maze[posX][posY].isBottom() && !maze[posX][posY+1].isRevisited()) {
-                g.drawLine((posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2),(posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(3*CELLSIZE/2));
-                posY++;
+            else if (!maze[posX][posY].isTop() && !maze[posX][posY-1].isRevisited()) {
+                g.drawLine((posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)-(CELLSIZE/2),(posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2));
+                posY--;
             }
             else if(!maze[posX][posY].isLeft() && !maze[posX-1][posY].isRevisited()) {
                 g.drawLine((posX*CELLSIZE)-(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2),(posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2));
                 posX--;
             }
-            else if (!maze[posX][posY].isTop() && !maze[posX][posY-1].isRevisited()) {
-                g.drawLine((posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)-(CELLSIZE/2),(posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2));
-                posY--;
+            else if (!maze[posX][posY].isBottom() && !maze[posX][posY+1].isRevisited()) {
+                g.drawLine((posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(CELLSIZE/2),(posX*CELLSIZE)+(CELLSIZE/2),(posY*CELLSIZE)+(3*CELLSIZE/2));
+                posY++;
             }
         }
         maze[posX][posY].setVisited(true);
