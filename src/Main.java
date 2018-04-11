@@ -82,6 +82,9 @@ public class Main {
                         case 1:
                             solver = new WallFollowerLeft(mff,mazeArea,speed);
                             break;
+                        case 2:
+                            solver = new AStar(mff,mazeArea,speed);
+                            break;
                         default :
                             solver = null;
                     }

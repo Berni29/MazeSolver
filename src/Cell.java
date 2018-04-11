@@ -4,6 +4,8 @@ public class Cell {
     private boolean bottom = false;
     private boolean left = false;
     private boolean visited = false;
+    private boolean opened = false;
+    private boolean closed = false;
     private static int cellSize = 4;
 
     public static int getCellSize() {
@@ -52,5 +54,21 @@ public class Cell {
 
     public void setVisited(boolean visited) {
         this.visited = visited;
+    }
+
+    public boolean isOpened() {
+        return opened;
+    }
+
+    public void setOpened(boolean opened) {
+        this.opened = opened;
+    }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public void setClosed(boolean closed) {
+        this.closed = closed;
     }
 }

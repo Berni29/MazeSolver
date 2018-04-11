@@ -3,7 +3,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.TimeUnit;
 
-public class WallFollowerLeft extends Solver {
+public class WallFollowerLeft implements Solver {
     private Cell[][] maze;
     private MazeFromFile mff;
     private JLabel mazeArea;
@@ -14,6 +14,7 @@ public class WallFollowerLeft extends Solver {
     private int desX, desY;
     private boolean kill = false;
     private String facing = "top";
+    private int baseSpeed = 1;
 
     public WallFollowerLeft(MazeFromFile mff, JLabel mazeArea, JSlider speed) {
         this.mff = mff;
@@ -226,7 +227,7 @@ public class WallFollowerLeft extends Solver {
                     try {
                         move();
                         mazeArea.setIcon(new ImageIcon(img));
-                        TimeUnit.MILLISECONDS.sleep(Solver.getBaseSpeed()*(100-speed.getValue()));
+                        TimeUnit.MILLISECONDS.sleep(baseSpeed*(100-speed.getValue()));
                         mazeArea.repaint();
                     }
                     catch (InterruptedException e) {

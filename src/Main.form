@@ -65,6 +65,7 @@
               <model>
                 <item value="Wall follower (Right)"/>
                 <item value="Wall follower (Left)"/>
+                <item value="A*"/>
               </model>
             </properties>
           </component>
