@@ -59,6 +59,7 @@ public class AStar implements Solver {
             public void run() {
                 try {
                     while (!kill&&!openSet.isEmpty()) {
+                        int size = Cell.getCellSize();
                         Point current = null;
                         for (Point point : openSet) {
                             if (current == null) {
@@ -73,14 +74,26 @@ public class AStar implements Solver {
                         }
                         openSet.remove(current);
                         closedSet.add(current);
-                        maze[current.x][current.y].setClosed(true);
+                        int x = current.x;
+                        int y = current.y;
+                        walker.setColor(Color.GRAY);
+                        walker.fillRect(x*size + size*20/100, y*size + size*20/100, size - size*40/100, size - size*40/100);
+                        mazeArea.setIcon(new ImageIcon(img));
+                        mazeArea.repaint();
+                        TimeUnit.MILLISECONDS.sleep(10);
                         for (Point neighbor : possibleWays(current)) {
                             if (closedSet.contains(neighbor)) {
                                 continue;
                             }
                             if (!openSet.contains(neighbor)) {
                                 openSet.add(neighbor);
-                                maze[current.x][current.y].setOpened(true);
+                                x = neighbor.x;
+                                y = neighbor.y;
+                                walker.setColor(Color.GREEN);
+                                walker.fillRect(x*size + size*20/100, y*size + size*20/100, size - size*40/100, size - size*40/100);
+                                mazeArea.setIcon(new ImageIcon(img));
+                                mazeArea.repaint();
+                                TimeUnit.MILLISECONDS.sleep(10);
                             }
                             Double tennative_gScore = gScore.get(current) +
                                     Point.distance(current.x, current.y, neighbor.x, neighbor.y);
@@ -93,21 +106,6 @@ public class AStar implements Solver {
                                     Point.distance(neighbor.x, neighbor.y, goal.x, goal.y));
 
                         }
-                        for (int x = 0; x < maze.length; x++) {
-                            for (int y = 0; y < maze[x].length; y++) {
-                                int size = Cell.getCellSize();
-                                if (maze[x][y].isClosed()) {
-                                    walker.setColor(Color.RED);
-                                    walker.fillRect(x*size + size*20/100, y*size + size*20/100, size - size*40/100, size - size*40/100);
-                                }
-                                if (maze[x][y].isOpened()) {
-                                    walker.setColor(Color.GRAY);
-                                    walker.fillRect(x*size + size*20/100, y*size + size*20/100, size - size*40/100, size - size*40/100);
-                                }
-                            }
-                        }
-                        mazeArea.setIcon(new ImageIcon(img));
-                        mazeArea.repaint();
                         TimeUnit.MILLISECONDS.sleep(baseSpeed*(100-speed.getValue()));
                     }
                 }
